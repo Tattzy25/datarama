@@ -3,16 +3,9 @@
 import { useMemo, useState } from "react"
 import { IconCopy } from "@tabler/icons-react"
 
+import { EditableDataGrid, type EditableDataset } from "@/components/editable-data-grid"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 
@@ -25,6 +18,7 @@ export type DataPreviewDataset = {
 
 type DataPreviewProps = {
   dataset?: DataPreviewDataset | null
+  onDatasetChange?: (dataset: EditableDataset) => void
   isLoading?: boolean
   className?: string
 }
@@ -41,8 +35,24 @@ const FORMAT_ORDER = [
 type FormatKey = (typeof FORMAT_ORDER)[number]["key"]
 type CodeFormat = Exclude<FormatKey, "table">
 
-export function DataPreview({ dataset, isLoading = false, className }: DataPreviewProps) {
+export function DataPreview({ dataset, onDatasetChange, isLoading = false, className }: DataPreviewProps) {
   const [activeTab, setActiveTab] = useState<FormatKey>("table")
+
+  // Convert dataset to editable format
+  const editableDataset: EditableDataset | null = useMemo(() => {
+    if (!dataset || dataset.rows.length === 0) return null
+    
+    return {
+      columns: dataset.columns,
+      rows: dataset.rows.map((row) =>
+        dataset.columns.reduce<Record<string, string>>((acc, column) => {
+          const value = row[column]
+          acc[column] = value === null || value === undefined ? "" : String(value)
+          return acc
+        }, {})
+      ),
+    }
+  }, [dataset])
 
   const formatted = useMemo(() => {
     if (!dataset || dataset.rows.length === 0) {
@@ -144,24 +154,10 @@ export function DataPreview({ dataset, isLoading = false, className }: DataPrevi
               </div>
             ) : format.key === "table" ? (
               hasData ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      {dataset.columns.map((column) => (
-                        <TableHead key={column}>{column}</TableHead>
-                      ))}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {dataset.rows.map((row, index) => (
-                      <TableRow key={index}>
-                        {dataset.columns.map((column) => (
-                          <TableCell key={column}>{String(row[column] ?? "")}</TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <EditableDataGrid
+                  dataset={editableDataset}
+                  onChange={onDatasetChange}
+                />
               ) : (
                 <div className="text-muted-foreground rounded-lg border border-dashed p-6 text-sm">
                   No data yet. Run a generation to see results here.

@@ -28,11 +28,11 @@ type PromptOption = {
   prompt: string
 }
 
-type ModelOption = {
+type CreativityOption = {
   value: string
   name: string
   description: string
-  max?: boolean
+  premium?: boolean
 }
 
 const PROMPTS: PromptOption[] = [
@@ -56,36 +56,31 @@ const PROMPTS: PromptOption[] = [
   },
 ]
 
-const MODELS: ModelOption[] = [
+const CREATIVITY_MODES: CreativityOption[] = [
   {
-    value: "gpt-5",
-    name: "GPT-5",
-    description: "Most advanced model",
-    max: true,
+    value: "realistic",
+    name: "Realistic",
+    description: "Real-world accurate data",
   },
   {
-    value: "gpt-4o",
-    name: "GPT-4o",
-    description: "Fast and capable",
+    value: "creative",
+    name: "Creative",
+    description: "Diverse and varied outputs",
+    premium: true,
   },
   {
-    value: "gpt-4",
-    name: "GPT-4",
-    description: "Reliable and accurate",
-  },
-  {
-    value: "claude-3.5",
-    name: "Claude 3.5 Sonnet",
-    description: "Great for coding tasks",
+    value: "random",
+    name: "Random",
+    description: "Unpredictable variations",
   },
 ]
 
 type Ai02Props = {
-  onSubmit?: (payload: { prompt: string; model: string }) => void
+  onSubmit?: (payload: { prompt: string; creativity: string }) => void
   isLoading?: boolean
   placeholder?: string
   prompts?: PromptOption[]
-  models?: ModelOption[]
+  creativityModes?: CreativityOption[]
 }
 
 export default function Ai02({
@@ -93,10 +88,10 @@ export default function Ai02({
   isLoading = false,
   placeholder = "Ask anything",
   prompts = PROMPTS,
-  models = MODELS,
+  creativityModes = CREATIVITY_MODES,
 }: Ai02Props) {
   const [inputValue, setInputValue] = useState("")
-  const [selectedModel, setSelectedModel] = useState(models[0])
+  const [selectedCreativity, setSelectedCreativity] = useState(creativityModes[0])
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
   const handlePromptClick = (prompt: string) => {
@@ -107,10 +102,10 @@ export default function Ai02({
     }
   }
 
-  const handleModelChange = (value: string) => {
-    const model = models.find((m) => m.value === value)
-    if (model) {
-      setSelectedModel(model)
+  const handleCreativityChange = (value: string) => {
+    const creativity = creativityModes.find((m) => m.value === value)
+    if (creativity) {
+      setSelectedCreativity(creativity)
     }
   }
 
@@ -119,14 +114,14 @@ export default function Ai02({
       return
     }
 
-    onSubmit?.({ prompt: inputValue.trim(), model: selectedModel.value })
+    onSubmit?.({ prompt: inputValue.trim(), creativity: selectedCreativity.value })
     setInputValue("")
   }
 
-  const renderMaxBadge = () => (
+  const renderPremiumBadge = () => (
     <div className="flex h-[14px] items-center gap-1.5 rounded border border-border px-1 py-0">
       <span className="bg-gradient-to-r from-[#81a1c1] to-[#7d7c9b] bg-clip-text text-[9px] font-bold uppercase text-transparent">
-        MAX
+        PRO
       </span>
     </div>
   )
@@ -151,34 +146,34 @@ export default function Ai02({
 
           <div className="relative flex items-center">
             <Select
-              value={selectedModel.value}
-              onValueChange={handleModelChange}
+              value={selectedCreativity.value}
+              onValueChange={handleCreativityChange}
             >
               <SelectTrigger className="w-fit border-none bg-transparent! p-0 text-sm text-muted-foreground hover:text-foreground focus:ring-0 shadow-none">
                 <SelectValue>
-                  {selectedModel.max ? (
+                  {selectedCreativity.premium ? (
                     <div className="flex items-center gap-1">
-                      <span>{selectedModel.name}</span>
-                      {renderMaxBadge()}
+                      <span>{selectedCreativity.name}</span>
+                      {renderPremiumBadge()}
                     </div>
                   ) : (
-                    <span>{selectedModel.name}</span>
+                    <span>{selectedCreativity.name}</span>
                   )}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {models.map((model) => (
-                  <SelectItem key={model.value} value={model.value}>
-                    {model.max ? (
+                {creativityModes.map((creativity) => (
+                  <SelectItem key={creativity.value} value={creativity.value}>
+                    {creativity.premium ? (
                       <div className="flex items-center gap-1">
-                        <span>{model.name}</span>
-                        {renderMaxBadge()}
+                        <span>{creativity.name}</span>
+                        {renderPremiumBadge()}
                       </div>
                     ) : (
-                      <span>{model.name}</span>
+                      <span>{creativity.name}</span>
                     )}
                     <span className="text-muted-foreground block text-xs">
-                      {model.description}
+                      {creativity.description}
                     </span>
                   </SelectItem>
                 ))}

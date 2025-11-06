@@ -170,8 +170,8 @@ const data = {
       icon: IconReport,
     },
     {
-      name: "Word Assistant",
-      url: "/dashboard/word-assistant",
+      name: "Stations",
+      url: "/dashboard/stations",
       icon: IconFileWord,
     },
   ],

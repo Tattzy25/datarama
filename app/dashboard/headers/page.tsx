@@ -6,7 +6,9 @@ import { IconPlus, IconTrash } from "@tabler/icons-react"
 import {
   DataPreview,
   type DataPreviewDataset,
+  type DataRow,
 } from "@/components/data-preview"
+import type { EditableDataset } from "@/components/editable-data-grid"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -46,7 +48,20 @@ export default function HeadersPage() {
 
     setIsLoading(true)
     await new Promise((resolve) => setTimeout(resolve, 500))
-    setDataset(generateHeaderDataset(headers, rowCount))
+    
+    // TODO: Connect to backend API here
+    // Placeholder: Create empty rows with user-defined headers
+    const emptyRows = Array.from({ length: rowCount }, () =>
+      headers.reduce<DataRow>((acc, header) => {
+        acc[header] = ""
+        return acc
+      }, {})
+    )
+
+    setDataset({
+      columns: headers,
+      rows: emptyRows,
+    })
     setIsLoading(false)
   }
 
@@ -60,6 +75,13 @@ export default function HeadersPage() {
       rows: dataset.rows.length,
     }
   }, [dataset])
+
+  const handleDatasetChange = (updatedDataset: EditableDataset) => {
+    setDataset({
+      columns: updatedDataset.columns,
+      rows: updatedDataset.rows,
+    })
+  }
 
   return (
     <div className="flex flex-col gap-6 px-4 lg:px-6">
@@ -152,25 +174,9 @@ export default function HeadersPage() {
             ) : null}
           </div>
 
-          <DataPreview dataset={dataset} isLoading={isLoading} />
+          <DataPreview dataset={dataset} onDatasetChange={handleDatasetChange} isLoading={isLoading} />
         </CardContent>
       </Card>
     </div>
   )
-}
-
-function generateHeaderDataset(headers: string[], rows: number): DataPreviewDataset {
-  const safeRows = Math.max(1, Math.min(rows, 50))
-
-  const dataRows = Array.from({ length: safeRows }, (_, index) => {
-    return headers.reduce<Record<string, string>>((acc, header, headerIndex) => {
-      acc[header] = `${header} value ${(index + 1) * (headerIndex + 1)}`
-      return acc
-    }, {})
-  })
-
-  return {
-    columns: headers,
-    rows: dataRows,
-  }
 }

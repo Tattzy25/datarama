@@ -8,6 +8,7 @@ import {
   DataPreview,
   type DataPreviewDataset,
 } from "@/components/data-preview"
+import type { EditableDataset } from "@/components/editable-data-grid"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -15,27 +16,27 @@ import { Spinner } from "@/components/ui/spinner"
 
 type SubmitPayload = {
   prompt: string
-  model: string
+  creativity: string
 }
 
 const PRESET_PROMPTS = [
   {
     icon: IconDatabase,
-    text: "Generate sales leads",
+    text: "Customer data",
     prompt:
-      "Create a dataset of 15 construction leads including company name, contact, project size, and estimated close date.",
+      "Generate a customer database with name, email, phone, company, and location fields",
   },
   {
     icon: IconDatabase,
-    text: "Pricing scenarios",
+    text: "Sales pipeline",
     prompt:
-      "Build a pricing comparison table for three bid packages showing labor, materials, and margin columns.",
+      "Create a sales pipeline dataset with deal name, amount, stage, close date, and owner",
   },
   {
     icon: IconDatabase,
-    text: "Project timeline",
+    text: "Product inventory",
     prompt:
-      "Produce a phased project plan with phase name, owner, start date, end date, and critical tasks.",
+      "Build a product inventory with SKU, name, category, price, stock quantity, and supplier",
   },
 ]
 
@@ -44,13 +45,23 @@ export default function AskBridgitAIPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [lastPrompt, setLastPrompt] = useState<SubmitPayload | null>(null)
 
-  const handleSubmit = async ({ prompt, model }: SubmitPayload) => {
+  const handleSubmit = async ({ prompt, creativity }: SubmitPayload) => {
     setIsLoading(true)
-    setLastPrompt({ prompt, model })
+    setLastPrompt({ prompt, creativity })
 
+    // TODO: Connect to backend API here
+    // For now, show placeholder data structure
     await new Promise((resolve) => setTimeout(resolve, 600))
 
-    setDataset(generatePreview(prompt))
+    // Placeholder: Empty dataset ready for backend integration
+    setDataset({
+      columns: ["Column 1", "Column 2", "Column 3"],
+      rows: [
+        { "Column 1": "", "Column 2": "", "Column 3": "" },
+        { "Column 1": "", "Column 2": "", "Column 3": "" },
+        { "Column 1": "", "Column 2": "", "Column 3": "" },
+      ],
+    })
     setIsLoading(false)
   }
 
@@ -60,7 +71,7 @@ export default function AskBridgitAIPage() {
     }
 
     return {
-      model: lastPrompt.model,
+      creativity: lastPrompt.creativity,
       rows: dataset.rows.length,
       columns: dataset.columns.length,
     }
@@ -69,6 +80,13 @@ export default function AskBridgitAIPage() {
   const handleReset = () => {
     setDataset(null)
     setLastPrompt(null)
+  }
+
+  const handleDatasetChange = (updatedDataset: EditableDataset) => {
+    setDataset({
+      columns: updatedDataset.columns,
+      rows: updatedDataset.rows,
+    })
   }
 
   return (
@@ -82,7 +100,7 @@ export default function AskBridgitAIPage() {
           </CardDescription>
           {activeSummary ? (
             <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-              <Badge variant="outline">Model: {activeSummary.model}</Badge>
+              <Badge variant="outline">Creativity: {activeSummary.creativity}</Badge>
               <span>{activeSummary.columns} columns</span>
               <span>{activeSummary.rows} rows</span>
             </div>
@@ -119,34 +137,9 @@ export default function AskBridgitAIPage() {
               </span>
             ) : null}
           </div>
-          <DataPreview dataset={dataset} isLoading={isLoading} />
+          <DataPreview dataset={dataset} onDatasetChange={handleDatasetChange} isLoading={isLoading} />
         </CardContent>
       </Card>
     </div>
   )
-}
-
-function generatePreview(prompt: string): DataPreviewDataset {
-  const baseColumns = ["ID", "Title", "Owner", "Status", "Value"]
-  const seed = prompt.length || 5
-
-  const rows = Array.from({ length: Math.min(10, Math.max(5, seed % 10 || 6)) }, (_, index) => {
-    const id = index + 1
-    const owner = `Owner ${((index + seed) % 5) + 1}`
-    const statusPool = ["Planned", "Active", "Blocked", "Complete"]
-    const status = statusPool[(index + seed) % statusPool.length]
-
-    return {
-      ID: id,
-      Title: `${prompt.split(" ").slice(0, 3).join(" ") || "Dataset"} #${id}`,
-      Owner: owner,
-      Status: status,
-      Value: `$${((seed + index) * 173) % 100000}`,
-    }
-  })
-
-  return {
-    columns: baseColumns,
-    rows,
-  }
 }
