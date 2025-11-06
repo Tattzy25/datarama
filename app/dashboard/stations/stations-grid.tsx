@@ -28,12 +28,39 @@ export function StationsGrid({ initialStations }: StationsGridProps) {
   const { displayedStations, handleLoadMore, hasMore } =
     useStationPagination(stations)
 
-  const handlePlayStation = (station: Station) => {
+  const handlePlayStation = async (station: Station) => {
+    if (!audioRef.current) return
+    
+    // If clicking the same station that's already playing, toggle pause
+    if (currentStation?.stationuuid === station.stationuuid && !audioRef.current.paused) {
+      audioRef.current.pause()
+      setCurrentStation(null)
+      return
+    }
+    
+    // Stop any current playback and reset
+    audioRef.current.pause()
+    audioRef.current.currentTime = 0
+    
+    // Set new station
     setCurrentStation(station)
-    if (audioRef.current) {
-      audioRef.current.src = station.streamUrl
-      audioRef.current.load()
-      audioRef.current.play().catch(err => console.error("Error playing:", err))
+    
+    // Wait a brief moment for the audio element to reset
+    await new Promise(resolve => setTimeout(resolve, 100))
+    
+    // Load and play the new station with proper promise handling
+    audioRef.current.src = station.streamUrl
+    
+    try {
+      const playPromise = audioRef.current.play()
+      if (playPromise !== undefined) {
+        await playPromise
+        // Playback started successfully
+      }
+    } catch (error) {
+      console.error("Error playing station:", error)
+      // Reset current station if playback fails
+      setCurrentStation(null)
     }
   }
 
@@ -51,12 +78,12 @@ export function StationsGrid({ initialStations }: StationsGridProps) {
 
       {/* Music Player - 100px spacing above, 80px spacing below */}
       <div className="mt-[100px] mb-[80px] flex justify-center">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-2xl">
           <Speaker currentStation={currentStation} audioRef={audioRef} />
         </div>
       </div>
 
-      <StationList stations={displayedStations} onPlay={handlePlayStation} />
+  <StationList stations={displayedStations} onPlay={handlePlayStation} />
 
       <LoadMoreButton hasMore={hasMore} onLoadMore={handleLoadMore} />
     </div>

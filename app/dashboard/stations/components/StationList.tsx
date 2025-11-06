@@ -20,13 +20,11 @@ export function StationList({ stations, onPlay }: StationListProps) {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-[10px]">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center max-w-[1400px] mx-auto">
       {stations.map((station) => (
         <StationCard
           key={station.id}
           title={station.title}
-          subtitle={station.description}
-          date={station.subtitle}
           imageUrl={station.favicon || "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&auto=format&fit=crop"}
           onPlay={() => onPlay(station)}
         />

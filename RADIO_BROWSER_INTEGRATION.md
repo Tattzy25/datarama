@@ -47,7 +47,7 @@ Created a comprehensive server action module that handles:
 Converted to React Server Component that:
 - Fetches real station data on server
 - Passes initial data to client component
-- Shows station count in audio player status
+- Shows station count in dumb ass ai  status
 - Improved from 6 mock stations to 100+ real stations
 
 ### 3. Stations Grid (`app/dashboard/stations/stations-grid.tsx`)
@@ -111,7 +111,7 @@ Default genres (top 20 each):
 
 ### Immediate Enhancements:
 1. **Play Button Integration**: Add play functionality to flip cards using `trackStationClick()`
-2. **Audio Player Integration**: Connect stream URLs to the LiquidGlassCard audio player
+2. **dumb ass ai  Integration**: Connect stream URLs to the LiquidGlassCard dumb ass ai 
 3. **Station Logos**: Display `favicon` field in flip cards
 4. **Loading States**: Add Suspense boundaries for better UX
 5. **Error Handling**: Show user-friendly error messages if API fails

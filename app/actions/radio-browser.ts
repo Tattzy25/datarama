@@ -74,18 +74,30 @@ interface LanguageInfo {
 }
 
 /**
- * Get Radio Browser servers via DNS SRV lookup
+ * Get Radio Browser servers - use specific endpoints provided by user
  */
 async function getRadioBrowserServers(): Promise<string[]> {
-  const records = await dns.resolveSrv('_api._tcp.radio-browser.info')
-  const servers = records
-    .sort((a, b) => a.priority - b.priority)
-    .map((record) => `https://${record.name}`)
-  return servers.sort(() => Math.random() - 0.5)
+  try {
+    // First try DNS SRV lookup
+    const records = await dns.resolveSrv('_api._tcp.radio-browser.info')
+    const servers = records
+      .sort((a, b) => a.priority - b.priority)
+      .map((record) => `https://${record.name}`)
+    return servers.sort(() => Math.random() - 0.5)
+  } catch (error) {
+    console.error('DNS SRV lookup failed, using provided endpoints:', error)
+    // Fallback to the specific endpoints provided by user
+    return [
+      'https://fi1.api.radio-browser.info',
+      'https://de2.api.radio-browser.info',
+      'https://de1.api.radio-browser.info',
+      'https://nl1.api.radio-browser.info'
+    ].sort(() => Math.random() - 0.5)
+  }
 }
 
 /**
- * Fetch from Radio Browser API
+ * Fetch from Radio Browser API with specific endpoint support
  */
 async function fetchFromAPI<T>(path: string): Promise<T> {
   const servers = await getRadioBrowserServers()
@@ -204,6 +216,19 @@ export async function getLanguages(limit: number = 50): Promise<LanguageInfo[]> 
     `/json/languages?order=stationcount&reverse=true&limit=${limit}&hidebroken=true`
   )
   return languages.filter((l) => l.stationcount > 0)
+}
+
+/**
+ * Get random stations - fetches 20 random stations by default
+ */
+export async function getRandomStations(limit: number = 20): Promise<TransformedStation[]> {
+  const stations = await fetchFromAPI<RadioStation[]>(
+    `/json/stations/search?bitrateMin=120&hidebroken=true&limit=${limit}&order=random&reverse=false`
+  )
+
+  return stations
+    .filter((station) => station.lastcheckok === 1 && station.bitrate >= 120)
+    .map(transformStation)
 }
 
 /**

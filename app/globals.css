@@ -41,6 +41,9 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-lp-accent: var(--lp-accent);
+  --color-lp-primary-foreground: var(--lp-primary-foreground);
+  --color-lp-primary: var(--lp-primary);
 }
 
 :root {
@@ -76,6 +79,9 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.852 0.199 91.936);
+  --lp-primary: oklch(0.205 0 0);
+  --lp-primary-foreground: oklch(0.985 0 0);
+  --lp-accent: oklch(0.269 0 0);
 }
 
 .dark {
@@ -110,6 +116,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.421 0.095 57.708);
+  --lp-primary: oklch(0.205 0 0);
+  --lp-primary-foreground: oklch(0.985 0 0);
+  --lp-accent: oklch(0.97 0 0);
 }
 
 @layer base {
@@ -119,4 +128,29 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@utility focus-area {
+    position: relative;
+  &:before {
+    position: absolute;
+    content: "";
+    inset: calc(var(--y) * 1px) calc(var(--x) * 1px);
+  }
+}
+
+@utility focus-area-x-* {
+    --x: --value(number);
+}
+
+@utility focus-area-y-* {
+    --y: --value(number);
+}
+
+@utility -focus-area-x-* {
+    --x: --value(number) * -1;
+}
+
+@utility -focus-area-y-* {
+    --y: --value(number) * -1;
 }

@@ -24,9 +24,7 @@
     "@svgl": "https://svgl.app/r/{name}.json",
     "@lytenyte": "https://www.1771technologies.com/r/{name}.json",
     "@kokonutui": "https://kokonutui.com/r/{name}.json",
-    "@elevenlabs-ui": "https://ui.elevenlabs.io/r/{name}.json"
+    "@elevenlabs-ui": "https://ui.elevenlabs.io/r/{name}.json",
+    "@limeplay": "https://limeplay.winoffrg.dev/r/{name}.json"
   }
 }
-
-
-

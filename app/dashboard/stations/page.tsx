@@ -3,14 +3,42 @@ import { StationsGrid } from "./stations-grid"
 import ShimmerText from "@/components/kokonutui/shimmer-text"
 
 export default async function StationsPage() {
-  // Fetch exactly 10 high-quality radio stations with bitrate >= 120 kbps
-  const stations = await searchStationsAdvanced({
-    bitrateMin: 120, // Only stations with 128+ kbps
-    limit: 10, // Exactly 10 stations
-    order: 'clickcount', // Sort by popularity
-    reverse: true, // Highest first
-    hidebroken: true, // No broken stations
-  })
+  // Define preferred genres based on user input
+  const genres = [
+    'hip hop',
+    'house',
+    'edm',
+    'electronic',
+    'r&b',
+    'rap',
+    'rock',
+    'top 100',
+    'pop',
+    'top 10',
+    '2000s'
+  ]
+
+  // Fetch stations for each genre
+  const genrePromises = genres.map((genre) =>
+    searchStationsAdvanced({
+      tag: genre,
+      bitrateMin: 120,
+      limit: 5,
+      order: 'clickcount',
+      reverse: true,
+      hidebroken: true,
+    })
+  )
+
+  const genreResults = await Promise.all(genrePromises)
+  const allStations = genreResults.flat()
+
+  // Shuffle and get 20 unique stations
+  const uniqueStations = Array.from(
+    new Map(allStations.map((s) => [s.stationuuid, s])).values()
+  )
+  const shuffled = uniqueStations.sort(() => Math.random() - 0.5)
+  const stations = shuffled.slice(0, 20)
 
   return (
     <div className="flex flex-1 flex-col px-1 lg:px-1 pb-4 pt-0">
