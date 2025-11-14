@@ -2,11 +2,8 @@
 
 import React from "react"
 
-import { useShakaPlayer } from "@/hooks/limeplay/use-shaka-player"
-
 export const PlayerHooks = React.memo(() => {
-  useShakaPlayer()
-
+  // Shaka player removed - music player feature disabled
   return null
 })
 
