@@ -1,4 +1,3 @@
-import type React from "react"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -26,56 +25,38 @@ export function cn(...inputs: ClassValue[]) {
 //   : never
 
 /**
- * Overloaded function for React synthetic events
- */
-export function on<R extends HTMLElement>(
-  element: EventTarget,
-  events: string | string[],
-  callback: (event: React.SyntheticEvent<R>) => void
-): EventTarget
-
-/**
- * Implementation
+ * Add event listener to element
  */
 export function on(
   element: EventTarget,
   events: string | string[],
-  callback: (event: any) => void
+  callback: EventListener
 ): EventTarget {
   if (Array.isArray(events)) {
     events.forEach((event) => {
-      element.addEventListener(event, callback as EventListener)
+      element.addEventListener(event, callback)
     })
   } else {
-    element.addEventListener(events, callback as EventListener)
+    element.addEventListener(events, callback)
   }
 
   return element
 }
 
 /**
- * Overloaded function for React synthetic events
- */
-export function off<R extends HTMLElement>(
-  element: EventTarget,
-  events: string | string[],
-  callback: (event: React.SyntheticEvent<R>) => void
-): EventTarget
-
-/**
- * Implementation
+ * Remove event listener from element
  */
 export function off(
   element: EventTarget,
   events: string | string[],
-  callback: (event: any) => void
+  callback: EventListener
 ): EventTarget {
   if (Array.isArray(events)) {
     events.forEach((event) => {
-      element.removeEventListener(event, callback as EventListener)
+      element.removeEventListener(event, callback)
     })
   } else {
-    element.removeEventListener(events, callback as EventListener)
+    element.removeEventListener(events, callback)
   }
 
   return element
