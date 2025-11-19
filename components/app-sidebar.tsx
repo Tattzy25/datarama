@@ -7,12 +7,9 @@ import {
   IconDatabase,
   IconFileAi,
   IconFileDescription,
-  IconFileWord,
-  IconFolder,
   IconHelp,
   IconInnerShadowTop,
   IconReport,
-  IconSearch,
   IconSettings,
 } from "@tabler/icons-react"
 
@@ -36,14 +33,13 @@ const data = {
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  navMain: [
+  navMain: [],
+  quickLinks: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: IconDashboard,
     },
-  ],
-  quickLinks: [
     {
       title: "Ask Bridgit AI",
       url: "/dashboard/ask-bridgit-ai",
@@ -63,11 +59,6 @@ const data = {
       title: "URL",
       url: "/dashboard/url",
       icon: IconReport,
-    },
-    {
-      title: "Templates",
-      url: "/dashboard/templates",
-      icon: IconFolder,
     },
   ],
   navClouds: [
@@ -129,24 +120,8 @@ const data = {
       url: "#",
       icon: IconHelp,
     },
-    {
-      title: "Search",
-      url: "/dashboard",
-      icon: IconSearch,
-    },
   ],
-  documents: [
-    {
-      name: "Integrations",
-      url: "/dashboard/integrations",
-      icon: IconDatabase,
-    },
-    {
-      name: "Stations",
-      url: "/dashboard/stations",
-      icon: IconFileWord,
-    },
-  ],
+  documents: [],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -169,7 +144,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} quickLinks={data.quickLinks} />
-        <NavDocuments items={data.documents} />
+        {data.documents.length > 0 && <NavDocuments items={data.documents} />}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
